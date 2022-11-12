@@ -79,5 +79,5 @@ calc_drifting_weight <- function(dat) {
     # 비중 노멀라이즈
     group_by(td) %>%
     mutate(weight = weight / sum(weight)) %>%
-    ungroup() %>%
+    ungroup()
 }
