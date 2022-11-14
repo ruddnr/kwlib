@@ -16,6 +16,7 @@ get_port_return <- function(port_weight, rtn_tbl, trd_cost = 0.003) {
   term_tbl <- get_term_tbl(port_weight, rtn_tbl)
 
   port_return <- rtn_tbl %>%
+    filter(ticker %in% port_weight$ticker) %>%
     filter(td >= min(term_tbl$td), td <= max(term_tbl$td)) %>%
     left_join(term_tbl, by = "td") %>%
     left_join(
