@@ -18,7 +18,7 @@ get_port_return <- function(port_weight, rtn_tbl, trd_cost = 0.003, adjust_rebal
 
   port_weight <- port_weight %>% sum_port_weight()
 
-  term_tbl <- get_term_tbl(port_weight, rtn_tbl, adjust_rebal_date = 1)
+  term_tbl <- get_term_tbl(port_weight, rtn_tbl, adjust_rebal_date = adjust_rebal_date)
 
   port_return <- rtn_tbl %>%
     filter(ticker %in% port_weight$ticker) %>%
