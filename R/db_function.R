@@ -7,7 +7,7 @@
 #' @return collect 전의 tbl
 #' @export
 tbl_qpms <- function(dbo_name, table_name) {
-  tbl(con_qpms, in_schema(sql(str_glue("{dbo_name}.dbo")), sql(table_name)))
+  tbl(con_qpms, dbplyr::in_schema(sql(str_glue("{dbo_name}.dbo")), sql(table_name)))
 }
 
 #' @rdname tbl_qpms
