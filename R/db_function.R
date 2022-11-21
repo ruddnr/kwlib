@@ -12,12 +12,12 @@ tbl_qpms <- function(dbo_name, table_name) {
 
 #' @rdname tbl_qpms
 #' @export
-connect_qpms_db <- function(dsn = "QPMS") {
+connect_qpms_db <- function(dsn = "QPMS", encoding = "EUC-KR") {
   con_qpms <<- odbc::dbConnect(odbc::odbc(),
                          dsn = dsn,
                          uid = "quant",
                          pwd = "mirae",
-                         encoding = "EUC-KR")
+                         encoding = encoding)
 }
 
 #' @rdname tbl_qpms
