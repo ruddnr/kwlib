@@ -29,10 +29,9 @@ get_port_return <- function(port_weight, rtn_tbl, trd_cost = 0.003, adjust_rebal
       by = c("term", "ticker")
     ) %>%
     arrange(td) %>%
-    dtplyr::lazy_dt() %>%
-
     calc_drifting_weight() %>%
 
+    dtplyr::lazy_dt() %>%
     group_by(ticker) %>%
     mutate(diff = if_else(rebal == TRUE, weight - lag(weight), 0)) %>%
     # 분석초기 weight_chg 0으로 취급
@@ -74,6 +73,7 @@ sum_port_weight <- function(port_weight) {
 
 calc_drifting_weight <- function(dat) {
   dat %>%
+    dtplyr::lazy_dt() %>%
     group_by(term, ticker) %>%
     # fill(weight, .direction = "down") %>%
     mutate(weight = replace_na(weight, 0)) %>%
@@ -86,5 +86,6 @@ calc_drifting_weight <- function(dat) {
     # 비중 노멀라이즈
     group_by(td) %>%
     mutate(weight = weight / sum(weight)) %>%
-    ungroup()
+    ungroup() %>%
+    collect()
 }
