@@ -29,6 +29,7 @@ get_port_return <- function(port_weight, rtn_tbl, trd_cost = 0.003, adjust_rebal
       by = c("term", "ticker")
     ) %>%
     arrange(td) %>%
+    dtplyr::lazy_dt() %>%
 
     calc_drifting_weight() %>%
 
@@ -44,7 +45,8 @@ get_port_return <- function(port_weight, rtn_tbl, trd_cost = 0.003, adjust_rebal
       diff = sum(abs(diff), na.rm  = TRUE) / 2,
       .groups = "drop"
     ) %>%
-    mutate(rtn_with_cost = rtn - diff * trd_cost)
+    mutate(rtn_with_cost = rtn - diff * trd_cost) %>%
+    collect()
 
   return(port_return)
 }

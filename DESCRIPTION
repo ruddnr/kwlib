@@ -10,6 +10,7 @@ Imports:
     clipr,
     dplyr,
     dbplyr,
+    dtplyr,
     ggplot2,
     janitor,
     lubridate,
