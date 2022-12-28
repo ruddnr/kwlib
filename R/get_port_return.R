@@ -31,13 +31,13 @@ get_port_return <- function(port_weight, rtn_tbl, trd_cost = 0.003, adjust_rebal
     arrange(td) %>%
     calc_drifting_weight() %>%
 
-    dtplyr::lazy_dt() %>%
     group_by(ticker) %>%
     mutate(diff = if_else(rebal == TRUE, weight - lag(weight), 0)) %>%
     # 분석초기 weight_chg 0으로 취급
     mutate(diff = replace_na(diff, 0)) %>%
     ungroup() %>%
 
+    dtplyr::lazy_dt() %>%
     group_by(td) %>%
     summarise(
       rtn = sum(rtn * weight, na.rm = TRUE),
