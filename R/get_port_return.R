@@ -76,10 +76,10 @@ sum_port_weight <- function(port_weight) {
 #' @export
 calc_drifting_weight <- function(dat) {
   dat %>%
+    mutate(weight = replace_na(weight, 0)) %>%
     dtplyr::lazy_dt() %>%
     group_by(term, ticker) %>%
     # fill(weight, .direction = "down") %>%
-    mutate(weight = replace_na(weight, 0)) %>%
     mutate(weight2 = cumprod(1 + rtn) * weight) %>%
     mutate(weight2 = lag(weight2)) %>%
     mutate(weight = if_else(is.na(weight2), weight, weight2)) %>%
