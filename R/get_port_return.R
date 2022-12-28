@@ -13,6 +13,7 @@
 #' 예를들면 비중 데이터의 날짜가 10월 31일이라면 해당 비중으로 11월 1일 수익률부터 적용됨.
 #' 데이터 가용시점을 고려한 보수적인 리밸런싱을 가정할 경우 날짜를 더 미룰 수 있음.
 #' @return 일별 포트 수익률과 비용감안 포트 수익률
+#' @import dtplyr
 #' @export
 get_port_return <- function(port_weight, rtn_tbl, trd_cost = 0.003, adjust_rebal_date = 1) {
 
@@ -31,13 +32,13 @@ get_port_return <- function(port_weight, rtn_tbl, trd_cost = 0.003, adjust_rebal
     arrange(td) %>%
     calc_drifting_weight() %>%
 
+    dtplyr::lazy_dt() %>%
     group_by(ticker) %>%
     mutate(diff = if_else(rebal == TRUE, weight - lag(weight), 0)) %>%
     # 분석초기 weight_chg 0으로 취급
     mutate(diff = replace_na(diff, 0)) %>%
     ungroup() %>%
 
-    dtplyr::lazy_dt() %>%
     group_by(td) %>%
     summarise(
       rtn = sum(rtn * weight, na.rm = TRUE),
@@ -76,8 +77,8 @@ sum_port_weight <- function(port_weight) {
 #' @export
 calc_drifting_weight <- function(dat) {
   dat %>%
-    mutate(weight = replace_na(weight, 0)) %>%
     dtplyr::lazy_dt() %>%
+    mutate(weight = replace_na(weight, 0)) %>%
     group_by(term, ticker) %>%
     # fill(weight, .direction = "down") %>%
     mutate(weight2 = cumprod(1 + rtn) * weight) %>%
