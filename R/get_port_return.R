@@ -50,6 +50,7 @@ get_port_return <- function(port_weight, rtn_tbl, trd_cost = 0.003, adjust_rebal
   return(port_return)
 }
 
+#' @export
 get_term_tbl <- function(port_weight, rtn_tbl, adjust_rebal_date = 1) {
 
   term_tbl <- tibble(
@@ -65,12 +66,14 @@ get_term_tbl <- function(port_weight, rtn_tbl, adjust_rebal_date = 1) {
   return(term_tbl)
 }
 
+#' @export
 sum_port_weight <- function(port_weight) {
   port_weight %>%
     group_by(td, ticker) %>%
     summarise(weight = sum(weight), .groups = "drop")
 }
 
+#' @export
 calc_drifting_weight <- function(dat) {
   dat %>%
     dtplyr::lazy_dt() %>%
