@@ -8,7 +8,7 @@
 \usage{
 tbl_qpms(dbo_name, table_name)
 
-connect_qpms_db(dsn = "QPMS")
+connect_qpms_db(dsn = "QPMS", encoding = "EUC-KR")
 
 disconnect_qpms_db()
 }
