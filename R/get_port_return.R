@@ -17,36 +17,17 @@
 #' @export
 get_port_return <- function(port_weight, rtn_tbl, trd_cost = 0.003, adjust_rebal_date = 1) {
 
-  port_weight <- port_weight %>% sum_port_weight()
+  port_weight <- sum_port_weight(port_weight)
 
-  term_tbl <- get_term_tbl(port_weight, rtn_tbl, adjust_rebal_date = adjust_rebal_date)
+  term_tbl <- get_term_tbl(port_weight = port_weight,
+                           rtn_tbl = rtn_tbl,
+                           adjust_rebal_date = adjust_rebal_date)
 
-  port_return <- rtn_tbl %>%
-    filter(ticker %in% port_weight$ticker) %>%
-    filter(td >= min(term_tbl$td), td <= max(term_tbl$td)) %>%
-    left_join(term_tbl, by = "td") %>%
-    left_join(
-      port_weight %>% rename(term = td),
-      by = c("term", "ticker")
-    ) %>%
-    arrange(td) %>%
-    calc_drifting_weight() %>%
+  port_weight_daily <- get_port_weight_daily(port_weight = port_weight,
+                                             rtn_tbl = rtn_tbl,
+                                             term_tbl = term_tbl)
 
-    dtplyr::lazy_dt() %>%
-    group_by(ticker) %>%
-    mutate(diff = if_else(rebal == TRUE, weight - lag(weight), 0)) %>%
-    # 분석초기 weight_chg 0으로 취급
-    mutate(diff = replace_na(diff, 0)) %>%
-    ungroup() %>%
-
-    group_by(td) %>%
-    summarise(
-      rtn = sum(rtn * weight, na.rm = TRUE),
-      diff = sum(abs(diff), na.rm  = TRUE) / 2,
-      .groups = "drop"
-    ) %>%
-    mutate(rtn_with_cost = rtn - diff * trd_cost) %>%
-    collect()
+  port_return <- calc_port_return(port_weight_daily = port_weight_daily, trd_cost = trd_cost)
 
   return(port_return)
 }
@@ -91,5 +72,41 @@ calc_drifting_weight <- function(dat) {
     group_by(td) %>%
     mutate(weight = weight / sum(weight)) %>%
     ungroup() %>%
+    collect()
+}
+
+#' @export
+get_port_weight_daily <- function(port_weight, rtn_tbl, term_tbl) {
+  rtn_tbl %>%
+    filter(ticker %in% port_weight$ticker) %>%
+    filter(td >= min(term_tbl$td), td <= max(term_tbl$td)) %>%
+    left_join(term_tbl, by = "td") %>%
+    left_join(
+      port_weight %>% rename(term = td),
+      by = c("term", "ticker")
+    ) %>%
+    arrange(td) %>%
+    calc_drifting_weight() %>%
+
+    dtplyr::lazy_dt() %>%
+    group_by(ticker) %>%
+    mutate(diff = if_else(rebal == TRUE, weight - lag(weight), 0)) %>%
+    # 분석초기 weight_chg 0으로 취급
+    mutate(diff = replace_na(diff, 0)) %>%
+    ungroup() %>%
+    collect()
+}
+
+#' @export
+calc_port_return <- function(port_weight_daily, trd_cost) {
+  port_weight_daily %>%
+    lazy_dt() %>%
+    group_by(td) %>%
+    summarise(
+      rtn = sum(rtn * weight, na.rm = TRUE),
+      diff = sum(abs(diff), na.rm  = TRUE) / 2,
+      .groups = "drop"
+    ) %>%
+    mutate(rtn_with_cost = rtn - diff * trd_cost) %>%
     collect()
 }
