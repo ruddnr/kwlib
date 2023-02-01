@@ -39,9 +39,10 @@ get_term_tbl <- function(port_weight, rtn_tbl, adjust_rebal_date = 1) {
     td = unique(rtn_tbl$td)
   ) %>%
     filter(td >= min(port_weight$td)) %>%
-    left_join(port_weight %>% distinct(td) %>% mutate(term = td), by = "td") %>%
+    left_join(port_weight %>% distinct(td) %>% rename(term = td), by = join_by(closest(td >= term))) %>%
     fill(term, .direction = "down") %>%
-    mutate(rebal = td == term) %>%
+    mutate(rebal = td == max(td), .by = term) %>%
+    mutate(rebal = if_else(td == max(td), FALSE, rebal)) %>%
     mutate(td = lead(td, adjust_rebal_date)) %>%
     na.omit()
 
@@ -77,6 +78,8 @@ calc_drifting_weight <- function(dat) {
 
 #' @export
 get_port_weight_daily <- function(port_weight, rtn_tbl, term_tbl) {
+  port_weight <- port_weight %>% rename(term = td)
+
   rtn_tbl %>%
     filter(ticker %in% port_weight$ticker) %>%
     filter(td >= min(term_tbl$td), td <= max(term_tbl$td)) %>%
