@@ -41,8 +41,8 @@ get_term_tbl <- function(port_weight, rtn_tbl, adjust_rebal_date = 1) {
     filter(td >= min(port_weight$td)) %>%
     left_join(port_weight %>% distinct(td) %>% rename(term = td), by = join_by(closest(td >= term))) %>%
     fill(term, .direction = "down") %>%
-    mutate(rebal = td == max(td), .by = term) %>%
-    mutate(rebal = if_else(td == max(td), FALSE, rebal)) %>%
+    mutate(rebal = td == min(td), .by = term) %>%
+    mutate(rebal = if_else(td == min(td), FALSE, rebal)) %>%
     mutate(td = lead(td, adjust_rebal_date)) %>%
     na.omit()
 
