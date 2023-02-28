@@ -18,12 +18,11 @@ Depends:
     rlang,
     slider,
     tidyverse,
-    writexl
-Imports:
-    data.table,
-    janitor,
-    recipes,
+    writexl,
     tidyquant
+Imports:
+    janitor,
+    recipes
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.3

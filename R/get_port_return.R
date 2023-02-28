@@ -52,8 +52,7 @@ get_term_tbl <- function(port_weight, rtn_tbl, adjust_rebal_date = 1) {
 #' @export
 sum_port_weight <- function(port_weight) {
   port_weight %>%
-    group_by(td, ticker) %>%
-    summarise(weight = sum(weight), .groups = "drop")
+    summarise(weight = sum(weight), .by = c(td, ticker))
 }
 
 #' @export
