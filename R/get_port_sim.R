@@ -9,6 +9,7 @@
 get_port_sim <- function(port_return) {
   bind_cols(
     tidyquant::tq_performance(port_return, rtn_with_cost, performance_fun = table.AnnualizedReturns),
+    tidyquant::tq_performance(port_return, rtn_with_cost, performance_fun = SortinoRatio),
     tudyquant::tq_performance(port_return, rtn_with_cost, performance_fun = maxDrawdown),
     tudyquant::tq_performance(port_return, rtn_with_cost, performance_fun = DownsideDeviation),
     port_return %>% summarise(avg_turnover = sum(diff)/(nrow(.)/250))
