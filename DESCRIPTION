@@ -17,9 +17,11 @@ Depends:
     readxl,
     rlang,
     slider,
+    tidymodels,
+    tidyquant,
     tidyverse,
     writexl,
-    tidyquant
+    yardstick
 Imports:
     janitor,
     recipes
