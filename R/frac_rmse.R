@@ -26,7 +26,6 @@
 #' @param ... Not currently used.
 #'
 #' @export
-#'
 frac_rmse <- function(data, ...) {
   UseMethod("frac_rmse")
 }
