@@ -3,7 +3,8 @@
 #' tidy modeling시 사용할 레시피 스텝
 #' @param recipe recipe object
 #' @param role
-
+#'
+#' @export
 step_winsorize <-
   function(recipe,
            ...,
@@ -56,7 +57,7 @@ calc_prob_vals <- function(dat, col_names, prob, na.rm){
     set_names(col_names)
 }
 
-
+#' @export
 prep.step_winsorize <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info)
   check_type(training[, col_names])
@@ -84,6 +85,7 @@ prep.step_winsorize <- function(x, training, info = NULL, ...) {
   )
 }
 
+#' @export
 bake.step_winsorize <- function(object, new_data, ...) {
   check_new_data(names(object$min_vals), object, new_data)
 
@@ -95,6 +97,7 @@ bake.step_winsorize <- function(object, new_data, ...) {
   new_data
 }
 
+#' @export
 print.step_winsorize <-
   function(x, width = max(20, options()$width - 30), ...) {
     title <- "Winsorizing for "

@@ -32,6 +32,7 @@ get_port_return <- function(port_weight, rtn_tbl, trd_cost = 0.003, adjust_rebal
   return(port_return)
 }
 
+
 #' @export
 get_term_tbl <- function(port_weight, rtn_tbl, adjust_rebal_date = 1) {
 
@@ -55,6 +56,7 @@ sum_port_weight <- function(port_weight) {
     summarise(weight = sum(weight), .by = c(td, ticker))
 }
 
+
 #' @export
 calc_drifting_weight <- function(dat) {
   dat %>%
@@ -74,6 +76,7 @@ calc_drifting_weight <- function(dat) {
     ungroup() %>%
     collect()
 }
+
 
 #' @export
 get_port_weight_daily <- function(port_weight, rtn_tbl, term_tbl) {
@@ -96,6 +99,7 @@ get_port_weight_daily <- function(port_weight, rtn_tbl, term_tbl) {
     ungroup() %>%
     collect()
 }
+
 
 #' @export
 calc_port_return <- function(port_weight_daily, trd_cost) {
