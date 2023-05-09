@@ -1,5 +1,6 @@
 #' partial root mean square error
 #'
+#' @importFrom rlang enquo
 #' @param data A `data.frame` containing the columns specified by the `truth`
 #' and `estimate` arguments.
 #'
