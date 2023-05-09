@@ -36,7 +36,7 @@ frac_rmse <- new_numeric_metric(frac_rmse, direction = "minimize")
 #' @export
 frac_rmse.data.frame <- function(data, truth, estimate, frac = 0.1, na_rm = TRUE, case_weights = NULL, ...) {
 
-  numeric_metric_summarizer(
+  yardstick::numeric_metric_summarizer(
     name = "frac_rmse",
     fn = frac_rmse_vec,
     data = data,
@@ -51,15 +51,15 @@ frac_rmse.data.frame <- function(data, truth, estimate, frac = 0.1, na_rm = TRUE
 #' @export
 #' @rdname frac_rmse
 frac_rmse_vec <- function(truth, estimate, frac = 0.1, na_rm = TRUE, case_weights = NULL, ...) {
-  check_numeric_metric(truth, estimate, case_weights)
+  yardstick::check_numeric_metric(truth, estimate, case_weights)
 
   if (na_rm) {
-    result <- yardstick_remove_missing(truth, estimate, case_weights)
+    result <- yardstick::yardstick_remove_missing(truth, estimate, case_weights)
 
     truth <- result$truth
     estimate <- result$estimate
     case_weights <- result$case_weights
-  } else if (yardstick_any_missing(truth, estimate, case_weights)) {
+  } else if (yardstick::yardstick_any_missing(truth, estimate, case_weights)) {
     return(NA_real_)
   }
 
@@ -73,12 +73,12 @@ frac_rmse_impl <- function(truth, estimate, frac, case_weights = NULL) {
 }
 
 yardstick_mean <- function(x, ..., case_weights = NULL, na_remove = FALSE) {
-  check_dots_empty()
+  rlang::check_dots_empty()
 
   if (is.null(case_weights)) {
     mean(x, na.rm = na_remove)
   } else {
-    case_weights <- vec_cast(case_weights, to = double())
+    case_weights <- vctrs::vec_cast(case_weights, to = double())
     stats::weighted.mean(x, w = case_weights, na.rm = na_remove)
   }
 }

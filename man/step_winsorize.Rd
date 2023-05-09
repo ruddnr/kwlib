@@ -23,5 +23,5 @@ step_winsorize(
 \item{role}{}
 }
 \description{
-tidy modeling시 사용할 레시피 스텝
+winsorize 레시피 스텝
 }

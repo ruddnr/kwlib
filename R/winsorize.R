@@ -1,6 +1,12 @@
 #' winsorize 레시피 스텝
 #'
-#' tidy modeling시 사용할 레시피 스텝
+#' @importFrom stats quantile
+#' @importFrom recipes step check_new_data recipes_eval_select check_type
+#' @importFrom recipes get_case_weights are_weights_used print_step rand_id
+#' @importFrom recipes add_step
+#' @importFrom purrr map_dfr as_vector set_names
+#' @importFrom rlang enquos
+#'
 #' @param recipe recipe object
 #' @param role
 #'
@@ -57,6 +63,7 @@ calc_prob_vals <- function(dat, col_names, prob, na.rm){
     set_names(col_names)
 }
 
+#' @importFrom recipes prep
 #' @export
 prep.step_winsorize <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info)
@@ -85,6 +92,7 @@ prep.step_winsorize <- function(x, training, info = NULL, ...) {
   )
 }
 
+#' @importFrom recipes bake
 #' @export
 bake.step_winsorize <- function(object, new_data, ...) {
   check_new_data(names(object$min_vals), object, new_data)
@@ -105,6 +113,13 @@ print.step_winsorize <-
                case_weights = x$case_weights)
     invisible(x)
   }
+
+#' @importFrom generics required_pkgs
+#' @export
+required_pkgs.step_winsorize <- function(x, ...) {
+  c("winsorize", "DescTools")
+}
+
 
 #'
 #' #' @rdname tidy.recipe

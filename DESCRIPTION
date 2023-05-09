@@ -23,7 +23,11 @@ Depends:
     writexl,
     yardstick
 Imports:
+    DescTools,
+    generics,
     janitor,
+    magrittr,
+    purrr,
     recipes
 Encoding: UTF-8
 LazyData: true
