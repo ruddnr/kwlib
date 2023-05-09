@@ -1,6 +1,5 @@
 #' partial root mean square error
 #'
-#' @importFrom rlang enquo
 #' @param data A `data.frame` containing the columns specified by the `truth`
 #' and `estimate` arguments.
 #'
@@ -41,10 +40,10 @@ frac_rmse.data.frame <- function(data, truth, estimate, frac = 0.1, na_rm = TRUE
     name = "frac_rmse",
     fn = frac_rmse_vec,
     data = data,
-    truth = !!enquo(truth),
-    estimate = !!enquo(estimate),
+    truth = !!rlang::enquo(truth),
+    estimate = !!rlang::enquo(estimate),
     na_rm = na_rm,
-    case_weights = !!enquo(case_weights),
+    case_weights = !!rlang::enquo(case_weights),
     fn_options = list(frac = frac)
   )
 }
@@ -68,7 +67,7 @@ frac_rmse_vec <- function(truth, estimate, frac = 0.1, na_rm = TRUE, case_weight
 }
 
 frac_rmse_impl <- function(truth, estimate, frac, case_weights = NULL) {
-  idx <- which(percent_rank(desc(truth)) <= frac)
+  idx <- which(dplyr::percent_rank(dplyr::desc(truth)) <= frac)
   errors <- (truth[idx] - estimate[idx]) ^ 2
   sqrt(yardstick_mean(errors, case_weights = case_weights))
 }
