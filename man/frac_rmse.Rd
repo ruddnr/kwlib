@@ -13,6 +13,7 @@ frac_rmse(data, ...)
   truth,
   estimate,
   frac = 0.1,
+  ans_order = "desc",
   na_rm = TRUE,
   case_weights = NULL,
   ...
@@ -22,6 +23,7 @@ frac_rmse_vec(
   truth,
   estimate,
   frac = 0.1,
+  ans_order = "desc",
   na_rm = TRUE,
   case_weights = NULL,
   ...
@@ -44,7 +46,9 @@ results (that is also `numeric`). As with `truth` this can be
 specified different ways but the primary method is to use an
 unquoted variable name. For `_vec()` functions, a `numeric` vector.}
 
-\item{frac}{Proportion of data to use in calculating rmse}
+\item{frac}{Proportion of data to use in calculating rmse. If the value is less then 1,
+then it is considered as a proportion. If the value is greater than or equal to 1,
+then it is considered as a number of data points used in calculation.}
 
 \item{na_rm}{A `logical` value indicating whether `NA`
 values should be stripped before the computation proceeds.}

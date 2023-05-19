@@ -97,11 +97,11 @@ yardstick_mean <- function(x, ..., case_weights = NULL, na_remove = FALSE) {
 }
 # data("solubility_test")
 #
-frac_rmse_vec(
-  truth = solubility_test$solubility,
-  estimate = solubility_test$prediction,
-  frac = 0.1
-)
+# frac_rmse_vec(
+#   truth = solubility_test$solubility,
+#   estimate = solubility_test$prediction,
+#   frac = 0.1
+# )
 #
 # set.seed(1234)
 # size <- 100
@@ -117,11 +117,11 @@ frac_rmse_vec(
 #   .id = "resample"
 # )
 #
-solubility_resampled %>%
-  group_by(resample) %>%
-  frac_rmse(solubility, prediction, frac = 0.1)
-
-solubility_resampled %>%
-  group_by(resample) %>%
-  slice_max(prediction, n = 10) %>%
-  rmse(solubility, prediction)
+# solubility_resampled %>%
+#   group_by(resample) %>%
+#   frac_rmse(solubility, prediction, frac = 0.1)
+#
+# solubility_resampled %>%
+#   group_by(resample) %>%
+#   slice_max(prediction, n = 10) %>%
+#   rmse(solubility, prediction)
