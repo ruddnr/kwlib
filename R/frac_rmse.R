@@ -14,7 +14,9 @@
 #' specified different ways but the primary method is to use an
 #' unquoted variable name. For `_vec()` functions, a `numeric` vector.
 #'
-#' @param frac Proportion of data to use in calculating rmse
+#' @param frac Proportion of data to use in calculating rmse. If the value is less then 1,
+#' then it is considered as a proportion. If the value is greater than or equal to 1,
+#' then it is considered as a number of data points used in calculation.
 #'
 #' @param na_rm A `logical` value indicating whether `NA`
 #' values should be stripped before the computation proceeds.
@@ -30,11 +32,12 @@ frac_rmse <- function(data, ...) {
   UseMethod("frac_rmse")
 }
 
-frac_rmse <- new_numeric_metric(frac_rmse, direction = "minimize")
+frac_rmse <- yardstick::new_numeric_metric(frac_rmse, direction = "minimize")
 
 #' @rdname frac_rmse
 #' @export
-frac_rmse.data.frame <- function(data, truth, estimate, frac = 0.1, na_rm = TRUE, case_weights = NULL, ...) {
+frac_rmse.data.frame <- function(data, truth, estimate, frac = 0.1, ans_order = "desc",
+                                 na_rm = TRUE, case_weights = NULL, ...) {
 
   yardstick::numeric_metric_summarizer(
     name = "frac_rmse",
@@ -44,13 +47,13 @@ frac_rmse.data.frame <- function(data, truth, estimate, frac = 0.1, na_rm = TRUE
     estimate = !!rlang::enquo(estimate),
     na_rm = na_rm,
     case_weights = !!rlang::enquo(case_weights),
-    fn_options = list(frac = frac)
+    fn_options = list(frac = frac, ans_order = ans_order)
   )
 }
 
 #' @export
 #' @rdname frac_rmse
-frac_rmse_vec <- function(truth, estimate, frac = 0.1, na_rm = TRUE, case_weights = NULL, ...) {
+frac_rmse_vec <- function(truth, estimate, frac = 0.1, ans_order = "desc", na_rm = TRUE, case_weights = NULL, ...) {
   yardstick::check_numeric_metric(truth, estimate, case_weights)
 
   if (na_rm) {
@@ -63,11 +66,21 @@ frac_rmse_vec <- function(truth, estimate, frac = 0.1, na_rm = TRUE, case_weight
     return(NA_real_)
   }
 
-  frac_rmse_impl(truth, estimate, frac = frac, case_weights = case_weights)
+  frac_rmse_impl(truth, estimate, frac = frac, ans_order = ans_order, case_weights = case_weights)
 }
 
-frac_rmse_impl <- function(truth, estimate, frac, case_weights = NULL) {
-  idx <- which(dplyr::percent_rank(dplyr::desc(truth)) <= frac)
+frac_rmse_impl <- function(truth, estimate, frac, ans_order = c("desc", "asc"), case_weights = NULL) {
+  if (ans_order == "desc") {
+    estimate2 <- dplyr::desc(estimate)
+  } else {
+    estimate2 <- estimate
+  }
+  if (frac < 1) {
+    idx <- which(dplyr::percent_rank(estimate2) <= frac)
+  } else {
+    idx <- which(dplyr::row_number(estimate2) <= frac)
+  }
+
   errors <- (truth[idx] - estimate[idx]) ^ 2
   sqrt(yardstick_mean(errors, case_weights = case_weights))
 }
@@ -84,11 +97,11 @@ yardstick_mean <- function(x, ..., case_weights = NULL, na_remove = FALSE) {
 }
 # data("solubility_test")
 #
-# frac_rmse_vec(
-#   truth = solubility_test$solubility,
-#   estimate = solubility_test$prediction,
-#   frac = 0.1
-# )
+frac_rmse_vec(
+  truth = solubility_test$solubility,
+  estimate = solubility_test$prediction,
+  frac = 0.1
+)
 #
 # set.seed(1234)
 # size <- 100
@@ -104,10 +117,11 @@ yardstick_mean <- function(x, ..., case_weights = NULL, na_remove = FALSE) {
 #   .id = "resample"
 # )
 #
-# solubility_resampled %>%
-#   group_by(resample) %>%
-#   frac_rmse(solubility, prediction, frac = 0.1)
-#
-# solubility_resampled %>%
-#   group_by(resample) %>%
-#   rmse(solubility, prediction, frac = 0.1)
+solubility_resampled %>%
+  group_by(resample) %>%
+  frac_rmse(solubility, prediction, frac = 0.1)
+
+solubility_resampled %>%
+  group_by(resample) %>%
+  slice_max(prediction, n = 10) %>%
+  rmse(solubility, prediction)
